@@ -10,7 +10,6 @@ export default function NewProductPage() {
         <h1 className="text-2xl font-bold">Create New Product</h1>
         <p className="text-gray-500">Add a new digital product to your shop</p>
       </motion.div>
-
       <ProductForm />
     </div>
   )

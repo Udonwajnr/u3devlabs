@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { LayoutDashboard, ImageIcon, FileText, Settings, LogOut, Menu, ChevronDown, Mail } from "lucide-react"
+import { LayoutDashboard, ImageIcon, FileText, Settings, LogOut, Menu, ChevronDown, Mail, Book, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -52,6 +52,8 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     { name: "Portfolio", href: "/admin/portfolio", icon: <ImageIcon className="h-5 w-5" /> },
     { name: "Blog", href: "/admin/blog", icon: <FileText className="h-5 w-5" /> },
     { name: "Messages", href: "/admin/messages", icon: <Mail className="h-5 w-5" /> },
+    { name: "Ebooks", href: "/admin/ebooks", icon: <Book className="h-5 w-5" /> },
+    { name: "Shop", href: "/admin/shop", icon: <ShoppingCart className="h-5 w-5" /> },
     { name: "Settings", href: "/admin/settings", icon: <Settings className="h-5 w-5" /> },
   ]
 
