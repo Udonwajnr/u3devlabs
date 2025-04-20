@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Search, Filter, Eye, Trash2, MoreHorizontal, Mail, Calendar, CheckCircle } from "lucide-react"
+import { Search, Filter, Eye, Trash2, MoreHorizontal, Mail, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -25,16 +25,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
-import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -149,9 +139,16 @@ export default function MessagesPage() {
   const [serviceFilter, setServiceFilter] = useState("all")
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [messageToDelete, setMessageToDelete] = useState<number | null>(null)
-  const [selectedMessage, setSelectedMessage] = useState<any | null>(null)
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [replyText, setReplyText] = useState("")
+
+  // Initialize messages from localStorage or use initial data
+  useEffect(() => {
+    const storedMessages = localStorage.getItem("adminMessages")
+    if (!storedMessages) {
+      localStorage.setItem("adminMessages", JSON.stringify(initialMessagesData))
+    } else {
+      setMessagesData(JSON.parse(storedMessages))
+    }
+  }, [])
 
   // Filter messages based on search query, status, and service
   const filteredMessages = messagesData.filter((message) => {
@@ -174,7 +171,10 @@ export default function MessagesPage() {
 
   const confirmDelete = () => {
     if (messageToDelete) {
-      setMessagesData(messagesData.filter((message) => message.id !== messageToDelete))
+      const updatedMessages = messagesData.filter((message) => message.id !== messageToDelete)
+      setMessagesData(updatedMessages)
+      localStorage.setItem("adminMessages", JSON.stringify(updatedMessages))
+
       setIsDeleteDialogOpen(false)
       setMessageToDelete(null)
 
@@ -186,37 +186,8 @@ export default function MessagesPage() {
   }
 
   const viewMessage = (message: any) => {
-    // Mark as read if unread
-    if (message.status === "unread") {
-      setMessagesData(messagesData.map((m) => (m.id === message.id ? { ...m, status: "read" } : m)))
-    }
-
-    setSelectedMessage(message)
-    setIsDrawerOpen(true)
-  }
-
-  const sendReply = () => {
-    if (!replyText.trim()) {
-      toast({
-        title: "Empty reply",
-        description: "Please enter a reply message.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Update message status to replied
-    setMessagesData(messagesData.map((m) => (m.id === selectedMessage?.id ? { ...m, status: "replied" } : m)))
-
-    toast({
-      title: "Reply sent",
-      description: `Your reply has been sent to ${selectedMessage?.fullName}.`,
-    })
-
-    // Close drawer and reset reply text
-    setIsDrawerOpen(false)
-    setReplyText("")
-    setSelectedMessage(null)
+    // Navigate to the message detail page
+    router.push(`/admin/messages/${message.id}`)
   }
 
   const formatDate = (dateString: string) => {
@@ -330,7 +301,12 @@ export default function MessagesPage() {
             <TableBody>
               {filteredMessages.length > 0 ? (
                 filteredMessages.map((message) => (
-                  <TableRow key={message.id} className={message.status === "unread" ? "bg-blue-50" : ""}>
+                  <TableRow
+                    key={message.id}
+                    className={message.status === "unread" ? "bg-blue-50" : ""}
+                    onClick={() => viewMessage(message)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <TableCell>
                       <div className="font-medium">{message.fullName}</div>
                       <div className="text-xs text-gray-500">{message.email}</div>
@@ -353,7 +329,7 @@ export default function MessagesPage() {
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-sm">{formatDate(message.date)}</TableCell>
                     <TableCell className="text-center">{getStatusBadge(message.status)}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
@@ -368,12 +344,7 @@ export default function MessagesPage() {
                             <Eye className="h-4 w-4 mr-2" />
                             View
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              viewMessage(message)
-                              setReplyText(`Dear ${message.fullName},\n\nThank you for your message. `)
-                            }}
-                          >
+                          <DropdownMenuItem onClick={() => router.push(`/admin/messages/${message.id}?reply=true`)}>
                             <Mail className="h-4 w-4 mr-2" />
                             Reply
                           </DropdownMenuItem>
@@ -417,70 +388,6 @@ export default function MessagesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Message Drawer */}
-      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Message from {selectedMessage?.fullName}</DrawerTitle>
-            <DrawerDescription>
-              <div className="flex flex-col gap-1 mt-2">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-500" />
-                  <span>{selectedMessage?.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <span>{selectedMessage && formatDate(selectedMessage.date)}</span>
-                </div>
-                {selectedMessage?.isEmailSent && (
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Email copy received</span>
-                  </div>
-                )}
-              </div>
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="px-4 py-2">
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-500">Service Requested</h4>
-                <p>{selectedMessage && serviceOptions[selectedMessage.service as keyof typeof serviceOptions]}</p>
-              </div>
-              {selectedMessage?.budget && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-500">Budget Range</h4>
-                  <p>{selectedMessage && budgetOptions[selectedMessage.budget as keyof typeof budgetOptions]}</p>
-                </div>
-              )}
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Message</h4>
-                <p className="whitespace-pre-line">{selectedMessage?.message}</p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-sm font-medium mb-2">Reply to this message</h4>
-              <Textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Type your reply here..."
-                rows={6}
-              />
-            </div>
-          </div>
-          <DrawerFooter>
-            <Button onClick={sendReply} className="bg-purple-600 hover:bg-purple-700">
-              <Mail className="h-4 w-4 mr-2" />
-              Send Reply
-            </Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
     </div>
   )
 }
