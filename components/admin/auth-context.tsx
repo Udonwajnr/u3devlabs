@@ -1,19 +1,23 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext, useState, useEffect } from "react"
+import axios from "axios"
 
 type User = {
-  id: string
+  _id: string
   name: string
   email: string
   role: string
+  avatar?: string
+  createdAt: string
 }
 
 type AuthContextType = {
   user: User | null
   isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
   login: (email: string, password: string) => Promise<boolean>
   signup: (name: string, email: string, password: string) => Promise<boolean>
   logout: () => void
@@ -24,61 +28,90 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Check if user is already logged in on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("adminUser")
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
-      setIsAuthenticated(true)
+      try {
+        setUser(JSON.parse(storedUser))
+        setIsAuthenticated(true)
+      } catch (error) {
+        console.error("Failed to parse stored user:", error)
+        localStorage.removeItem("adminUser")
+      }
     }
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // In a real app, this would make an API call to verify credentials
-    // For demo purposes, we'll accept any email/password with basic validation
-    if (!email || !password) {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      // Call the login API
+      const response = await axios.post("/api/auth/login", {
+        email,
+        password,
+      })
+
+      const { user } = response.data
+
+      // Store user data and update state
+      setUser(user)
+      setIsAuthenticated(true)
+      localStorage.setItem("adminUser", JSON.stringify(user))
+
+      return true
+    } catch (error) {
+      console.error("Login error:", error)
+
+      if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.error || "Authentication failed")
+      } else {
+        setError("An unexpected error occurred")
+      }
+
       return false
+    } finally {
+      setIsLoading(false)
     }
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Demo user
-    const demoUser: User = {
-      id: "1",
-      name: email.split("@")[0],
-      email,
-      role: "admin",
-    }
-
-    setUser(demoUser)
-    setIsAuthenticated(true)
-    localStorage.setItem("adminUser", JSON.stringify(demoUser))
-    return true
   }
 
   const signup = async (name: string, email: string, password: string): Promise<boolean> => {
-    // In a real app, this would make an API call to create a new user
-    if (!name || !email || !password) {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      // Call the signup API
+      const response = await axios.post("/api/auth/signup", {
+        name,
+        email,
+        password,
+      })
+
+      const { user } = response.data
+
+      // Store user data and update state
+      setUser(user)
+      setIsAuthenticated(true)
+      localStorage.setItem("adminUser", JSON.stringify(user))
+
+      return true
+    } catch (error) {
+      console.error("Signup error:", error)
+
+      if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.error || "Registration failed")
+      } else {
+        setError("An unexpected error occurred")
+      }
+
       return false
+    } finally {
+      setIsLoading(false)
     }
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Demo user
-    const demoUser: User = {
-      id: "1",
-      name,
-      email,
-      role: "admin",
-    }
-
-    setUser(demoUser)
-    setIsAuthenticated(true)
-    localStorage.setItem("adminUser", JSON.stringify(demoUser))
-    return true
   }
 
   const logout = () => {
@@ -88,7 +121,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, signup, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoading,
+        error,
+        login,
+        signup,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }
 

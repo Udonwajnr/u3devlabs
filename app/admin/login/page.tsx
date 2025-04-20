@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -14,29 +14,36 @@ import { useAuth } from "@/components/admin/auth-context"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuth()
+  const { login, isAuthenticated, isLoading, error: authError } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/admin")
+    }
+  }, [isAuthenticated, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
-    setIsLoading(true)
 
-    try {
-      const success = await login(email, password)
-      if (success) {
-        router.push("/admin")
-      } else {
-        setError("Invalid email or password")
-      }
-    } catch (err) {
-      setError("An error occurred during login")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
+    // Basic client-side validation
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address")
+      return
+    }
+
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      return
+    }
+
+    const success = await login(email, password)
+    if (success) {
+      router.push("/admin")
     }
   }
 
@@ -54,9 +61,9 @@ export default function LoginPage() {
             <p className="text-gray-600 mt-2">Sign in to your admin account</p>
           </div>
 
-          {error && (
+          {(error || authError) && (
             <Alert variant="destructive" className="mb-6">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error || authError}</AlertDescription>
             </Alert>
           )}
 
@@ -106,7 +113,7 @@ export default function LoginPage() {
         </div>
 
         <div className="px-6 py-4 bg-gray-50 border-t text-center text-xs text-gray-500">
-          <p>For demo purposes, you can use any email and password</p>
+          <p>Enter your credentials to access the admin dashboard</p>
         </div>
       </motion.div>
     </div>

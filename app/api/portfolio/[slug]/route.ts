@@ -30,6 +30,11 @@ export async function PUT(request: Request, { params }: { params: { slug: string
     // Update timestamp
     body.updatedAt = new Date().toISOString()
 
+    // Remove _id if present
+    if ('_id' in body) {
+      delete body._id
+    }
+
     // Validate data
     const validation = portfolioProjectSchema.safeParse(body)
     if (!validation.success) {
@@ -47,7 +52,10 @@ export async function PUT(request: Request, { params }: { params: { slug: string
       }
     }
 
-    const result = await db.collection("portfolio_projects").updateOne({ slug }, { $set: body })
+    const result = await db.collection("portfolio_projects").updateOne(
+      { slug },
+      { $set: body }
+    )
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: "Portfolio project not found" }, { status: 404 })
@@ -63,6 +71,7 @@ export async function PUT(request: Request, { params }: { params: { slug: string
     return NextResponse.json({ error: "Failed to update portfolio project" }, { status: 500 })
   }
 }
+
 
 export async function DELETE(request: Request, { params }: { params: { slug: string } }) {
   try {

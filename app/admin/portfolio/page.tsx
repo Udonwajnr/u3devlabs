@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Plus, Pencil, Trash2, Search, Eye, MoreHorizontal, Filter } from "lucide-react"
@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-
+import axios from "axios"
 // Sample portfolio data
 const initialPortfolioData = [
   {
@@ -101,33 +101,61 @@ const categoryOptions = [
 
 export default function PortfolioManagement() {
   const router = useRouter()
-  const [portfolioData, setPortfolioData] = useState(initialPortfolioData)
+  const [portfolioData, setPortfolioData] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [projectToDelete, setProjectToDelete] = useState<number | null>(null)
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
 
   // Filter projects based on search query, status, and category
-  const filteredProjects = portfolioData.filter((project) => {
+  const filteredProjects = portfolioData.filter((project:any) => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = statusFilter === "all" || project.status === statusFilter
     const matchesCategory = categoryFilter === "all" || project.categories.includes(categoryFilter)
     return matchesSearch && matchesStatus && matchesCategory
   })
 
-  const handleDeleteProject = (id: number) => {
-    setProjectToDelete(id)
-    setIsDeleteDialogOpen(true)
-  }
+  useEffect(()=>{
+    getPortfolioData()
+  },[])
 
-  const confirmDelete = () => {
-    if (projectToDelete) {
-      setPortfolioData(portfolioData.filter((project) => project.id !== projectToDelete))
-      setIsDeleteDialogOpen(false)
-      setProjectToDelete(null)
+  const getPortfolioData =async()=>{
+    try{
+      await axios.get('/api/portfolio')
+      .then((res)=>setPortfolioData(res.data))
+    }
+    catch(error){
+
     }
   }
+
+  const handleDeleteProject = (slug: string) => {
+    setProjectToDelete(slug)
+    setIsDeleteDialogOpen(true)
+  }
+  
+  const confirmDelete = async () => {
+    if (!projectToDelete) return
+  
+    try {
+      const response = await axios.delete(`/api/portfolio/${projectToDelete}`)
+      console.log(response.data)
+  
+      // Remove deleted project from state
+      setPortfolioData(prev =>
+        prev.filter((project: any) => project.slug !== projectToDelete)
+      )
+  
+      // Reset state
+      setIsDeleteDialogOpen(false)
+      setProjectToDelete(null)
+    } catch (error) {
+      console.error("Failed to delete project:", error)
+      // Optionally show user feedback
+    }
+  }
+  
 
   return (
     <div className="space-y-6">
@@ -207,7 +235,7 @@ export default function PortfolioManagement() {
                 <TableHead className="w-[50px]">ID</TableHead>
                 <TableHead>Project</TableHead>
                 <TableHead>Categories</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Completed Date</TableHead>
                 <TableHead className="text-center">Views</TableHead>
                 <TableHead className="text-center">Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -215,9 +243,9 @@ export default function PortfolioManagement() {
             </TableHeader>
             <TableBody>
               {filteredProjects.length > 0 ? (
-                filteredProjects.map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell className="font-medium">{project.id}</TableCell>
+                filteredProjects.map((project:any,index) => (
+                  <TableRow key={project._id}>
+                    <TableCell className="font-medium">{index+1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded bg-gray-200 flex-shrink-0"></div>
@@ -226,14 +254,14 @@ export default function PortfolioManagement() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {project.categories.map((category) => (
+                        {project.categories.map((category:any) => (
                           <Badge key={category} variant="outline" className="bg-purple-100 text-purple-800">
                             {categoryOptions.find((c) => c.id === category)?.name || category}
                           </Badge>
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell>{project.date}</TableCell>
+                    <TableCell>{project.completedAt}</TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Eye size={14} className="text-gray-500" />
@@ -264,11 +292,11 @@ export default function PortfolioManagement() {
                             <Eye className="h-4 w-4 mr-2" />
                             View
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => router.push(`/admin/portfolio/${project.id}/edit`)}>
+                          <DropdownMenuItem onClick={() => router.push(`/admin/portfolio/${project.slug}/edit`)}>
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteProject(project.id)}>
+                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteProject(project.slug)}>
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
                           </DropdownMenuItem>

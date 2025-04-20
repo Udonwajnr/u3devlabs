@@ -13,8 +13,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/hooks/use-toast"
-import { uploadImage } from "@/lib/cloudinary"
+import { uploadImage } from "@/lib/upload"
 import type { Product } from "@/lib/schemas"
+import {  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger } from "@/components/ui/dialog"
 
 interface ProductFormProps {
   initialData?: Product

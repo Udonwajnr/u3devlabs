@@ -134,11 +134,11 @@ export default function Home() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">
               <span className="text-purple-600">Solutions</span> that Revolutionize
-              <span className="relative inline-block ml-2">
+              {/* <span className="relative inline-block ml-2">
                 <span className="absolute -top-6 -right-6">
                   <StarIcon size={24} />
                 </span>
-              </span>
+              </span> */}
               <br />
               <span>Experiences that </span>
               <span className="text-purple-600">Transform</span>
@@ -166,21 +166,21 @@ export default function Home() {
             <div className="flex items-center gap-2 pt-4">
               <div className="flex -space-x-2">
                 <Image
-                  src="/placeholder.svg?height=40&width=40"
+                  src="/client1.png"
                   width={40}
                   height={40}
                   className="rounded-full border-2 border-white"
                   alt="Client"
                 />
                 <Image
-                  src="/placeholder.svg?height=40&width=40"
+                  src="/client2.png"
                   width={40}
                   height={40}
                   className="rounded-full border-2 border-white"
                   alt="Client"
                 />
                 <Image
-                  src="/placeholder.svg?height=40&width=40"
+                  src="/client3.png"
                   width={40}
                   height={40}
                   className="rounded-full border-2 border-white"
@@ -205,13 +205,13 @@ export default function Home() {
             <div className="relative rounded-lg overflow-hidden shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-transparent z-10"></div>
               <Image
-                src="/placeholder.svg?height=400&width=600"
+                src="/img2.jpg"
                 width={600}
                 height={400}
                 alt="Digital Solutions"
                 className="w-full h-auto"
               />
-              <div className="absolute inset-0 flex items-center justify-center z-20">
+              {/* <div className="absolute inset-0 flex items-center justify-center z-20">
                 <motion.button
                   className="bg-white/90 rounded-full p-4 shadow-lg"
                   whileHover={{ scale: 1.1 }}
@@ -219,7 +219,7 @@ export default function Home() {
                 >
                   <Play className="h-8 w-8 text-purple-600" />
                 </motion.button>
-              </div>
+              </div> */}
             </div>
           </motion.div>
         </div>
@@ -235,35 +235,39 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <Image
-              src="/placeholder.svg?height=30&width=100"
+              src="/logos/company-logo-1.png"
               width={100}
               height={30}
               alt="Partner logo"
               className="opacity-70 hover:opacity-100 transition-opacity"
             />
+
             <Image
-              src="/placeholder.svg?height=30&width=100"
+              src="/logos/company-logo-2.png"
               width={100}
               height={30}
               alt="Partner logo"
               className="opacity-70 hover:opacity-100 transition-opacity"
             />
+
             <Image
-              src="/placeholder.svg?height=30&width=100"
+              src="/logos/company-logo-3.png"
               width={100}
               height={30}
               alt="Partner logo"
               className="opacity-70 hover:opacity-100 transition-opacity"
             />
+
             <Image
-              src="/placeholder.svg?height=30&width=100"
+              src="/logos/company-logo-4.png"
               width={100}
               height={30}
               alt="Partner logo"
               className="opacity-70 hover:opacity-100 transition-opacity"
             />
+
             <Image
-              src="/placeholder.svg?height=30&width=100"
+              src="/logos/company-logo-5.png"
               width={100}
               height={30}
               alt="Partner logo"

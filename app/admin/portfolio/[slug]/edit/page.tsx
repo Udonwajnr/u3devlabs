@@ -2,10 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useRouter, useParams } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, ImageIcon, Loader2, Upload, X } from "lucide-react"
+import { ArrowLeft, ImageIcon, Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +19,7 @@ import { uploadImage } from "@/lib/upload"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import axios from "axios"
+
 // Category options
 const categoryOptions = [
   { id: "landing-page", name: "Landing Pages" },
@@ -28,16 +29,12 @@ const categoryOptions = [
   { id: "branding", name: "Branding" },
 ]
 
-interface ImageUploaderProps {
-  formData: any
-  setFormData: (data: any) => void
-  uploadImage: (file: File) => Promise<string>
-  maxImages?: number
-}
-
 const maxImages = 2
-export default function NewPortfolioProject() {
+export default function EditPortfolioProject() {
   const router = useRouter()
+  const params = useParams()
+  const slug = params?.slug as string
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -53,7 +50,7 @@ export default function NewPortfolioProject() {
     isPublished: false,
     featured: false,
     views: 0,
-    status: "draft", // Added status field with default value
+    status: "draft",
   })
   const [newTag, setNewTag] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -61,7 +58,41 @@ export default function NewPortfolioProject() {
   const [imageUploading, setImageUploading] = useState(false)
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [success, setSuccess] = useState(false)
+
+  // Fetch project data
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      if (!slug) return
+
+      try {
+        setIsLoading(true)
+        const response = await axios.get(`/api/portfolio/${slug}`)
+        const projectData = response.data
+
+        setFormData({
+          ...projectData,
+          status: projectData.isPublished ? "published" : "draft",
+          images: projectData.images || [],
+          categories: projectData.categories || [],
+          tags: projectData.tags || [],
+          technologies: projectData.technologies || [],
+        })
+      } catch (err) {
+        console.error("Failed to fetch project data:", err)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load project data",
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProjectData()
+  }, [slug])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -195,60 +226,66 @@ export default function NewPortfolioProject() {
     e.preventDefault()
     setError("")
     setSuccess(false)
-  
+
     // Basic validation
     if (!formData.title.trim()) {
       setError("Project title is required")
       return
     }
-  
+
     if (!formData.description.trim()) {
       setError("Project description is required")
       return
     }
-  
+
     if (formData.categories.length === 0) {
       setError("At least one category is required")
       return
     }
-  
+
     if (!formData.coverImage && !imagePreview) {
       setError("Project image is required")
       return
     }
-  
+
     try {
       setIsSubmitting(true)
-  
-      // Send data to API using axios instead of fetch
-      const response = await axios.post("/api/portfolio", formData, {
+
+      // Send data to API using axios for updating
+      const response = await axios.put(`/api/portfolio/${slug}`, formData, {
         headers: {
           "Content-Type": "application/json",
         },
       })
-  
-      // Axios automatically parses JSON, so we can directly access the data
-      const data = response.data
-  
+      .catch((error)=>{
+          console.log(error)
+      })
+
+
       setSuccess(true)
-  
+
+      toast({
+        title: "Success",
+        description: "Project updated successfully",
+      })
+
       // Redirect after successful submission
       setTimeout(() => {
         router.push("/admin/portfolio")
       }, 2000)
     } catch (err) {
       console.error(err)
-  
+
       // Axios error handling
-      // if (axios.isAxiosError(err)) {
-      //   // Get the error message from the response if available
-      //   const errorMessage = err.response?.data?.error || err.message || "Failed to create project"
-      //   setError(errorMessage)
-      // } else if (err instanceof Error) {
-      //   setError(err.message)
-      // } else {
-      //   setError("An unknown error occurred")
-      // }
+      if (axios.isAxiosError(err)) {
+        // Get the error message from the response if available
+        const errorMessage = err.response?.data?.error || err.message || "Failed to update project"
+        setError(errorMessage)
+      } else if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred")
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -256,7 +293,18 @@ export default function NewPortfolioProject() {
 
   const images = formData.images || []
   const hasReachedMaxImages = images.length >= maxImages
-  
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-5xl flex items-center justify-center min-h-[50vh]">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-10 w-10 text-purple-600 animate-spin mb-4" />
+          <p className="text-lg">Loading project data...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
       <motion.div
@@ -268,7 +316,7 @@ export default function NewPortfolioProject() {
         <Button variant="ghost" size="icon" onClick={() => router.push("/admin/portfolio")}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">Add New Portfolio Project</h1>
+        <h1 className="text-2xl font-bold">Edit Portfolio Project</h1>
       </motion.div>
 
       {error && (
@@ -279,7 +327,7 @@ export default function NewPortfolioProject() {
 
       {success && (
         <Alert className="mb-6 bg-green-50 border-green-200 text-green-800">
-          <AlertDescription>Project created successfully! Redirecting...</AlertDescription>
+          <AlertDescription>Project updated successfully! Redirecting...</AlertDescription>
         </Alert>
       )}
 
@@ -411,100 +459,104 @@ export default function NewPortfolioProject() {
                 </div>
 
                 <div className="space-y-4">
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Project Images*</Label>
-        <p className="text-xs text-muted-foreground">
-          Upload up to {maxImages} images. First image or selected image will be used as cover.
-        </p>
-      </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Project Images*</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Upload up to {maxImages} images. First image or selected image will be used as cover.
+                    </p>
+                  </div>
 
-      {/* Image Gallery */}
-      {images.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-          {images.map((imageUrl: string, index: number) => (
-            <div
-              key={index}
-              className={cn(
-                "relative rounded-md overflow-hidden border group",
-                formData.coverImage === imageUrl ? "ring-2 ring-primary" : "border-border",
-              )}
-            >
-              <img
-                src={imageUrl || "/placeholder.svg"}
-                alt={`Project image ${index + 1}`}
-                className="w-full h-40 object-cover"
-              />
+                  {/* Image Gallery */}
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                      {images.map((imageUrl: string, index: number) => (
+                        <div
+                          key={index}
+                          className={cn(
+                            "relative rounded-md overflow-hidden border group",
+                            formData.coverImage === imageUrl ? "ring-2 ring-primary" : "border-border",
+                          )}
+                        >
+                          <img
+                            src={imageUrl || "/placeholder.svg"}
+                            alt={`Project image ${index + 1}`}
+                            className="w-full h-40 object-cover"
+                          />
 
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div className="flex gap-2">
-                  {formData.coverImage !== imageUrl && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setCoverImage(imageUrl)}
-                      className="text-xs"
-                    >
-                      Set as Cover
-                    </Button>
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="flex gap-2">
+                              {formData.coverImage !== imageUrl && (
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => setCoverImage(imageUrl)}
+                                  className="text-xs"
+                                >
+                                  Set as Cover
+                                </Button>
+                              )}
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeImage(imageUrl)}
+                                className="text-xs"
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+
+                          {formData.coverImage === imageUrl && (
+                            <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs py-1 px-2 rounded-md">
+                              Cover
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeImage(imageUrl)}
-                    className="text-xs"
-                  >
-                    Remove
-                  </Button>
+
+                  {/* Upload Area */}
+                  {!hasReachedMaxImages && (
+                    <div className="border-2 border-dashed border-border rounded-md p-6 flex flex-col items-center justify-center bg-muted/50 hover:bg-muted transition-colors">
+                      {imageUploading ? (
+                        <div className="flex flex-col items-center">
+                          <Loader2 className="h-10 w-10 text-muted-foreground animate-spin mb-2" />
+                          <p className="text-sm text-muted-foreground">Uploading image...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground mb-2">Click to upload or drag and drop</p>
+                          <p className="text-xs text-muted-foreground mb-4">SVG, PNG, JPG or GIF (max. 2MB)</p>
+                          <Input
+                            id="image"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageChange}
+                            disabled={imageUploading}
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => document.getElementById("image")?.click()}
+                            disabled={imageUploading}
+                          >
+                            Select Image
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {hasReachedMaxImages && (
+                    <p className="text-sm text-amber-600">
+                      You've reached the maximum number of images ({maxImages}). Remove an image to upload a new one.
+                    </p>
+                  )}
                 </div>
-              </div>
-
-              {formData.coverImage === imageUrl && (
-                <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs py-1 px-2 rounded-md">
-                  Cover
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Upload Area */}
-      {!hasReachedMaxImages && (
-        <div className="border-2 border-dashed border-border rounded-md p-6 flex flex-col items-center justify-center bg-muted/50 hover:bg-muted transition-colors">
-          {imageUploading ? (
-            <div className="flex flex-col items-center">
-              <Loader2 className="h-10 w-10 text-muted-foreground animate-spin mb-2" />
-              <p className="text-sm text-muted-foreground">Uploading image...</p>
-            </div>
-          ) : (
-            <>
-              <ImageIcon className="h-10 w-10 text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground mb-2">Click to upload or drag and drop</p>
-              <p className="text-xs text-muted-foreground mb-4">SVG, PNG, JPG or GIF (max. 2MB)</p>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-                disabled={imageUploading}
-              />
-              <Button type="button" onClick={() => document.getElementById("image")?.click()} disabled={imageUploading}>
-                Select Image
-              </Button>
-            </>
-          )}
-        </div>
-      )}
-
-      {hasReachedMaxImages && (
-        <p className="text-sm text-amber-600">
-          You've reached the maximum number of images ({maxImages}). Remove an image to upload a new one.
-        </p>
-      )}
-    </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Project Status</Label>
@@ -566,7 +618,7 @@ export default function NewPortfolioProject() {
                 Cancel
               </Button>
               <Button type="submit" className="bg-purple-600 hover:bg-purple-700" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Project"}
+                {isSubmitting ? "Saving..." : "Update Project"}
               </Button>
             </motion.div>
           </form>

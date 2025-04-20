@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -14,37 +14,48 @@ import { useAuth } from "@/components/admin/auth-context"
 
 export default function SignupPage() {
   const router = useRouter()
-  const { signup } = useAuth()
+  const { signup, isAuthenticated, isLoading, error: authError } = useAuth()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/admin")
+    }
+  }, [isAuthenticated, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+
+    // Basic client-side validation
+    if (!name || name.length < 2) {
+      setError("Name must be at least 2 characters long")
+      return
+    }
+
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address")
+      return
+    }
+
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      return
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match")
       return
     }
 
-    setIsLoading(true)
-
-    try {
-      const success = await signup(name, email, password)
-      if (success) {
-        router.push("/admin")
-      } else {
-        setError("Failed to create account")
-      }
-    } catch (err) {
-      setError("An error occurred during signup")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
+    const success = await signup(name, email, password)
+    if (success) {
+      router.push("/admin")
     }
   }
 
@@ -62,9 +73,9 @@ export default function SignupPage() {
             <p className="text-gray-600 mt-2">Create your admin account</p>
           </div>
 
-          {error && (
+          {(error || authError) && (
             <Alert variant="destructive" className="mb-6">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error || authError}</AlertDescription>
             </Alert>
           )}
 
@@ -133,7 +144,7 @@ export default function SignupPage() {
         </div>
 
         <div className="px-6 py-4 bg-gray-50 border-t text-center text-xs text-gray-500">
-          <p>For demo purposes, you can use any email and password</p>
+          <p>Create an account to access the admin dashboard</p>
         </div>
       </motion.div>
     </div>

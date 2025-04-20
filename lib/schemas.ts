@@ -26,11 +26,11 @@ export type BlogPost = z.infer<typeof blogPostSchema>
 export const portfolioProjectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long"),
   slug: z.string().min(3, "Slug must be at least 3 characters long"),
-  description: z.string().min(10, "Description must be at least 10 characters long"),
-  content: z.string().min(50, "Content must be at least 50 characters long"),
+  description: z.string().min(2, "Description must be at least 10 characters long"),
+  content: z.string().optional(),
   coverImage: z.string().url("Cover image must be a valid URL"),
   images: z.array(z.string().url("Image must be a valid URL")),
-  category: z.string(),
+  categories: z.array(z.string()),
   tags: z.array(z.string()),
   client: z.string().optional(),
   completedAt: z.string().optional(),
@@ -120,4 +120,19 @@ export const reviewSchema = z.object({
   isVerified: z.boolean().default(false),
 })
 
+// Schema for login input validation
+export const loginInputSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+})
+
+// Schema for signup input validation
+export const signupInputSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+})
+
+export type LoginInput = z.infer<typeof loginInputSchema>
+export type SignupInput = z.infer<typeof signupInputSchema>
 export type Review = z.infer<typeof reviewSchema>
