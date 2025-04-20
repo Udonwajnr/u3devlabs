@@ -140,7 +140,6 @@ export default function PortfolioManagement() {
   
     try {
       const response = await axios.delete(`/api/portfolio/${projectToDelete}`)
-      console.log(response.data)
   
       // Remove deleted project from state
       setPortfolioData(prev =>

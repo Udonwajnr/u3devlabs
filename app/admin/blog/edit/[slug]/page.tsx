@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useRef, useEffect } from "react"
+import { useRouter, useParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowLeft, Upload, X, Bold, Italic, Link, List, ListOrdered, ImageIcon, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -36,8 +36,10 @@ const authorOptions = [
   { id: "shihab", name: "Shihab Uddin", avatar: "/avatars/shihab.jpg" },
 ]
 
-export default function NewBlogPost() {
+export default function EditBlogPost() {
   const router = useRouter()
+  const params = useParams()
+  const postSlug = params?.slug as string
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
@@ -55,27 +57,69 @@ export default function NewBlogPost() {
     },
   })
 
+  const [originalSlug, setOriginalSlug] = useState("")
+  const [postId, setPostId] = useState<string>("")
   const [newTag, setNewTag] = useState("")
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageUploading, setImageUploading] = useState(false)
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [previewMode, setPreviewMode] = useState("edit")
   const [success, setSuccess] = useState(false)
+
+  // Fetch blog post data
+  useEffect(() => {
+    const fetchBlogPost = async () => {
+      if (!postSlug) return
+
+      try {
+        setIsLoading(true)
+        setError("")
+
+        const response = await axios.get(`/api/blog/${postSlug}`)
+        const post = response.data
+
+        // Store the post ID for updates
+        setPostId(post._id)
+
+        // Set the original slug for comparison during update
+        setOriginalSlug(post.slug)
+
+        // Update form data with post data
+        setFormData({
+          title: post.title || "",
+          slug: post.slug || "",
+          excerpt: post.excerpt || "",
+          content: post.content || "",
+          coverImage: post.coverImage || "",
+          category: post.category || "",
+          tags: post.tags || [],
+          isPublished: post.isPublished || false,
+          author: post.author || {
+            name: "Shahed Shahriar",
+            avatar: "/avatars/shahed.jpg",
+          },
+        })
+
+        // Set image preview if there's a cover image
+        if (post.coverImage) {
+          setImagePreview(post.coverImage)
+        }
+      } catch (err) {
+        console.error("Error fetching blog post:", err)
+        setError("Failed to load blog post. Please try again.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBlogPost()
+  }, [postSlug])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
-
-    // Auto-generate slug from title if slug field is empty
-    if (name === "title" && !formData.slug) {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^\w\s]/gi, "")
-        .replace(/\s+/g, "-")
-
-      setFormData((prev) => ({ ...prev, slug }))
-    }
   }
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,11 +168,11 @@ export default function NewBlogPost() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
-  
+
     try {
       setImageUploading(true)
       const file = files[0]
-  
+
       // Check file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         toast({
@@ -139,23 +183,23 @@ export default function NewBlogPost() {
         setImageUploading(false)
         return
       }
-  
+
       // Preview the image locally
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
       }
       reader.readAsDataURL(file)
-  
+
       // Upload the image to get a URL
       const imageUrl = await uploadImage(file)
-  
+
       // Set the cover image directly
       setFormData({
         ...formData,
         coverImage: imageUrl,
       })
-  
+
       toast({
         title: "Success",
         description: "Cover image uploaded successfully",
@@ -282,32 +326,49 @@ export default function NewBlogPost() {
         category: formData.category,
         tags: formData.tags,
         isPublished: formData.isPublished,
+        // Only update publishedAt if the post is being published for the first time
         publishedAt: formData.isPublished ? new Date().toISOString() : undefined,
-        createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        views: 0,
       }
 
-      // Send the data to the API
-      const response = await axios.post("/api/blog", postData)
+      // Send the data to the API - use the slug endpoint
+      await axios.put(`/api/blog/slug/${postSlug}`, postData)
 
       setSuccess(true)
+      toast({
+        title: "Success",
+        description: "Blog post updated successfully",
+      })
 
-      // Redirect after a short delay
-      setTimeout(() => {
-        router.push("/admin/blog")
-      }, 2000)
+      // If the slug has changed, redirect to the blog list
+      // Otherwise, we could end up with a 404 if we try to reload the page
+      if (formData.slug !== originalSlug) {
+        setTimeout(() => {
+          router.push("/admin/blog")
+        }, 2000)
+      }
     } catch (error) {
-      console.error("Error creating blog post:", error)
+      console.error("Error updating blog post:", error)
 
       if (axios.isAxiosError(error) && error.response) {
-        setError(error.response.data.error || "Failed to create blog post")
+        setError(error.response.data.error || "Failed to update blog post")
       } else {
         setError("An unexpected error occurred")
       }
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          <p className="text-muted-foreground">Loading blog post...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -321,7 +382,7 @@ export default function NewBlogPost() {
         <Button variant="ghost" size="icon" onClick={() => router.push("/admin/blog")}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">Create New Blog Post</h1>
+        <h1 className="text-2xl font-bold">Edit Blog Post</h1>
       </motion.div>
 
       {error && (
@@ -332,7 +393,7 @@ export default function NewBlogPost() {
 
       {success && (
         <Alert className="bg-green-50 border-green-200 text-green-800">
-          <AlertDescription>Blog post created successfully! Redirecting...</AlertDescription>
+          <AlertDescription>Blog post updated successfully! Redirecting...</AlertDescription>
         </Alert>
       )}
 
@@ -594,10 +655,10 @@ export default function NewBlogPost() {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                Updating...
               </>
             ) : (
-              "Save Post"
+              "Update Post"
             )}
           </Button>
         </motion.div>

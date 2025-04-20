@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Plus, Pencil, Trash2, Search, Eye, MoreHorizontal, Filter, Calendar, MessageSquare } from "lucide-react"
+import { Plus, Pencil, Trash2, Search, Eye, MoreHorizontal, Filter, Calendar, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -25,88 +25,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import ViewCounter from "@/components/blog/view-counter"
-
-// Sample blog data
-const initialBlogData = [
-  {
-    id: 1,
-    title: "10 UI/UX Design Trends to Watch in 2024",
-    excerpt:
-      "Discover the latest design trends that are shaping the digital landscape and how you can incorporate them into your projects.",
-    image: "/placeholder.svg?height=600&width=1200",
-    date: "May 15, 2024",
-    author: "Shahed Shahriar",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["design"],
-    slug: "ui-ux-design-trends-2024",
-    featured: true,
-    status: "published",
-    comments: 5,
-    views: 1245,
-  },
-  {
-    id: 2,
-    title: "The Future of Web Development: What to Expect in the Next 5 Years",
-    excerpt:
-      "From WebAssembly to AI-driven development, explore the technologies that will define the future of web development.",
-    image: "/placeholder.svg?height=600&width=1200",
-    date: "May 10, 2024",
-    author: "Asif Rahman",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["development", "technology"],
-    slug: "future-of-web-development",
-    featured: true,
-    status: "published",
-    comments: 3,
-    views: 876,
-  },
-  {
-    id: 3,
-    title: "How to Optimize Your Website for Better Performance",
-    excerpt:
-      "Learn practical techniques to improve your website's loading speed and overall performance for better user experience.",
-    image: "/placeholder.svg?height=400&width=600",
-    date: "May 5, 2024",
-    author: "Asif Rahman",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["development", "tutorials"],
-    slug: "optimize-website-performance",
-    status: "published",
-    comments: 2,
-    views: 654,
-  },
-  {
-    id: 4,
-    title: "Building Accessible Web Applications: A Comprehensive Guide",
-    excerpt:
-      "Discover how to create web applications that are accessible to all users, including those with disabilities.",
-    image: "/placeholder.svg?height=400&width=600",
-    date: "April 28, 2024",
-    author: "Afia Nishat Kanta",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["development", "design"],
-    slug: "building-accessible-web-applications",
-    status: "draft",
-    comments: 0,
-    views: 321,
-  },
-  {
-    id: 5,
-    title: "The Role of AI in Modern Business Strategy",
-    excerpt:
-      "Explore how artificial intelligence is transforming business operations and strategy across various industries.",
-    image: "/placeholder.svg?height=400&width=600",
-    date: "April 20, 2024",
-    author: "Shihab Uddin",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["business", "technology"],
-    slug: "ai-in-modern-business-strategy",
-    status: "published",
-    comments: 7,
-    views: 987,
-  },
-]
+import axios from "axios"
+import { formatDistanceToNow } from "date-fns"
 
 // Category options
 const categoryOptions = [
@@ -117,34 +39,116 @@ const categoryOptions = [
   { id: "tutorials", name: "Tutorials" },
 ]
 
+interface BlogPost {
+  _id: string
+  title: string
+  excerpt: string
+  slug: string
+  coverImage: string
+  author: {
+    name: string
+    avatar?: string
+  }
+  category: string
+  tags: string[]
+  isPublished: boolean
+  publishedAt?: string
+  createdAt: string
+  updatedAt: string
+  views: number
+}
+
 export default function BlogManagement() {
   const router = useRouter()
-  const [blogData, setBlogData] = useState(initialBlogData)
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [postToDelete, setPostToDelete] = useState<number | null>(null)
+  const [postToDelete, setPostToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  // Fetch blog posts
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        const response = await axios.get("/api/blog")
+        console.log(response)
+        setBlogPosts(response.data)
+      } catch (err) {
+        console.error("Error fetching blog posts:", err)
+        setError("Failed to load blog posts. Please try again.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBlogPosts()
+  }, [])
 
   // Filter posts based on search query, status, and category
-  const filteredPosts = blogData.filter((post) => {
+  const filteredPosts = blogPosts?.filter((post) => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === "all" || post.status === statusFilter
-    const matchesCategory = categoryFilter === "all" || post.categories.includes(categoryFilter)
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "published" && post.isPublished) ||
+      (statusFilter === "draft" && !post.isPublished)
+    const matchesCategory = categoryFilter === "all" || post.category === categoryFilter
     return matchesSearch && matchesStatus && matchesCategory
   })
 
-  const handleDeletePost = (id: number) => {
-    setPostToDelete(id)
+  const handleDeletePost = (slug: string) => {
+    setPostToDelete(slug)
     setIsDeleteDialogOpen(true)
+    setDeleteError(null)
   }
 
-  const confirmDelete = () => {
-    if (postToDelete) {
-      setBlogData(blogData.filter((post) => post.id !== postToDelete))
+  const confirmDelete = async () => {
+    if (!postToDelete) return
+
+    try {
+      setIsDeleting(true)
+      setDeleteError(null)
+
+      const response = await axios.delete(`/api/blog/${postToDelete}`)
+
+      // Remove the deleted post from state
+      setBlogPosts(prev=>
+        prev?.filter((post) => post.slug !== postToDelete))
+
       setIsDeleteDialogOpen(false)
       setPostToDelete(null)
+    } catch (err) {
+      console.error("Error deleting post:", err)
+      setDeleteError("Failed to delete post. Please try again.")
+    } finally {
+      setIsDeleting(false)
     }
+  }
+
+  const formatDate = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true })
+    } catch (error) {
+      return "Invalid date"
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          <p className="text-muted-foreground">Loading blog posts...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -157,13 +161,19 @@ export default function BlogManagement() {
       >
         <div>
           <h1 className="text-2xl font-bold">Blog Posts</h1>
-          <p className="text-gray-500">Manage your blog content</p>
+          <p className="text-muted-foreground">Manage your blog content</p>
         </div>
         <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => router.push("/admin/blog/new")}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Post
         </Button>
       </motion.div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <motion.div
         className="flex flex-col sm:flex-row gap-4"
@@ -172,7 +182,7 @@ export default function BlogManagement() {
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
           <Input
             placeholder="Search posts..."
             className="pl-10"
@@ -222,9 +232,8 @@ export default function BlogManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px]">ID</TableHead>
                 <TableHead>Post</TableHead>
-                <TableHead>Categories</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>
                   <div className="flex items-center gap-1">
                     <Calendar size={14} />
@@ -237,52 +246,45 @@ export default function BlogManagement() {
                     <span>Views</span>
                   </div>
                 </TableHead>
-                <TableHead className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    <MessageSquare size={14} />
-                    <span>Comments</span>
-                  </div>
-                </TableHead>
                 <TableHead className="text-center">Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPosts.length > 0 ? (
+              {filteredPosts?.length > 0 ? (
                 filteredPosts.map((post) => (
-                  <TableRow key={post.id}>
-                    <TableCell className="font-medium">{post.id}</TableCell>
+                  <TableRow key={post._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded bg-gray-200 flex-shrink-0"></div>
+                        <div className="w-10 h-10 rounded overflow-hidden bg-gray-200 flex-shrink-0">
+                          {post.coverImage && (
+                            <img
+                              src={post.coverImage || "/placeholder.svg"}
+                              alt={post.title}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
                         <div>
                           <div className="font-medium">{post.title}</div>
-                          <div className="text-xs text-gray-500">By {post.author}</div>
+                          <div className="text-xs text-muted-foreground">By {post.author.name}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {post.categories.map((category) => (
-                          <Badge key={category} variant="outline" className="bg-purple-100 text-purple-800">
-                            {categoryOptions.find((c) => c.id === category)?.name || category}
-                          </Badge>
-                        ))}
-                      </div>
+                      <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                        {categoryOptions.find((c) => c.id === post.category)?.name || post.category}
+                      </Badge>
                     </TableCell>
-                    <TableCell>{post.date}</TableCell>
+                    <TableCell>{formatDate(post.createdAt)}</TableCell>
                     <TableCell className="text-center">
-                      {/* Use the ViewCounter component with trackView set to false */}
                       <ViewCounter slug={post.slug} trackView={false} iconSize={14} />
                     </TableCell>
-                    <TableCell className="text-center">{post.comments}</TableCell>
                     <TableCell className="text-center">
                       <Badge
-                        className={
-                          post.status === "published" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"
-                        }
+                        className={post.isPublished ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}
                       >
-                        {post.status === "published" ? "Published" : "Draft"}
+                        {post.isPublished ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -296,15 +298,15 @@ export default function BlogManagement() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => router.push(`/admin/blog/${post.id}`)}>
+                          <DropdownMenuItem onClick={() => router.push(`/blog/${post.slug}`)}>
                             <Eye className="h-4 w-4 mr-2" />
                             View
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => router.push(`/admin/blog/${post.id}/edit`)}>
+                          <DropdownMenuItem onClick={() => router.push(`/admin/blog/edit/${post.slug}`)}>
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeletePost(post.id)}>
+                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeletePost(post.slug)}>
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
@@ -315,7 +317,7 @@ export default function BlogManagement() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-6 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
                     No posts found matching your criteria
                   </TableCell>
                 </TableRow>
@@ -334,12 +336,26 @@ export default function BlogManagement() {
               This action cannot be undone. This will permanently delete the blog post and remove it from your website.
             </DialogDescription>
           </DialogHeader>
+
+          {deleteError && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertDescription>{deleteError}</AlertDescription>
+            </Alert>
+          )}
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isDeleting}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
