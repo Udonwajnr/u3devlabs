@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect,use } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
@@ -8,17 +8,18 @@ import ProductForm from "@/components/admin/product-form"
 import type { Product } from "@/lib/schemas"
 import { toast } from "@/hooks/use-toast"
 
-export default function EditProductPage({ params }: { params: { slug: string } }) {
+export default function EditProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const {slug} = use(params)
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/products/${params.slug}`)
+        const response = await fetch(`/api/products/${slug}`)
 
         if (!response.ok) {
           throw new Error("Failed to fetch product")
@@ -40,7 +41,7 @@ export default function EditProductPage({ params }: { params: { slug: string } }
     }
 
     fetchProduct()
-  }, [params.slug])
+  }, [slug])
 
  
   if (isLoading) {

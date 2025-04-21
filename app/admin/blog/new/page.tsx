@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { uploadImage } from "@/lib/upload"
 import { toast } from "@/hooks/use-toast"
 import axios from "axios"
+import RichTextEditor from "@/components/admin/rich-text-editor"
 
 // Category options
 const categoryOptions = [

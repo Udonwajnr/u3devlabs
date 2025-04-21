@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get("category")
     const featured = searchParams.get("featured")
+    const productType = searchParams.get("productType") 
     const limit = searchParams.get("limit") ? Number.parseInt(searchParams.get("limit") as string) : undefined
 
     const client = await clientPromise
@@ -20,6 +21,10 @@ export async function GET(request: NextRequest) {
 
     if (featured === "true") {
       query.isFeatured = true
+    }
+
+    if (productType) {
+      query.productType = productType
     }
 
     let productsQuery = db.collection("products").find(query).sort({ createdAt: -1 })
@@ -36,6 +41,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 })
   }
 }
+
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -12,7 +12,8 @@ import Footer from "@/components/footer"
 import type { Product } from "@/lib/schemas"
 import { Tag, DollarSign, ShoppingCart, ExternalLink, Check, Star, Package, RefreshCw, Shield } from "lucide-react"
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const {slug} = use(params)
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -24,7 +25,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     const fetchProduct = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/products/${params.slug}`)
+        const response = await fetch(`/api/products/${slug}`)
 
         if (!response.ok) {
           throw new Error("Failed to fetch product")
@@ -38,7 +39,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
         const relatedResponse = await fetch(`/api/products?category=${encodeURIComponent(data.category)}&limit=3`)
         if (relatedResponse.ok) {
           const relatedData = await relatedResponse.json()
-          setRelatedProducts(relatedData.filter((p: Product) => p.slug !== params.slug).slice(0, 3))
+          setRelatedProducts(relatedData.filter((p: Product) => p.slug !== slug).slice(0, 3))
         }
       } catch (error) {
         console.error("Error fetching product:", error)
@@ -49,7 +50,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     }
 
     fetchProduct()
-  }, [params.slug])
+  }, [slug])
 
   if (isLoading) {
     return (

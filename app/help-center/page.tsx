@@ -69,7 +69,7 @@ const popularArticles = [
 ]
 
 // FAQ data by category
-const faqData = {
+const faqData :any= {
   "getting-started": [
     {
       question: "What is the first step to working with U3DEVLAB?",
@@ -320,7 +320,7 @@ export default function HelpCenterPage() {
                   </CardHeader>
                   <CardContent>
                     <Accordion type="single" collapsible className="w-full">
-                      {faqData[category.id].map((faq, index) => (
+                      {faqData[category.id].map((faq:any, index:number) => (
                         <AccordionItem key={index} value={`faq-${index}`}>
                           <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
                           <AccordionContent>

@@ -16,7 +16,7 @@ import ShareButtons from "@/components/blog/share-buttons"
 import ViewCounter from "@/components/blog/view-counter"
 
 // Decorative SVG components
-const StarIcon = ({ className, size = 24, fill = "#9333EA" }) => (
+const StarIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: string; size?: number; fill?: string }) => (
   <svg
     width={size}
     height={size}
@@ -29,7 +29,7 @@ const StarIcon = ({ className, size = 24, fill = "#9333EA" }) => (
   </svg>
 )
 
-const CircleIcon = ({ className, size = 24, fill = "#9333EA" }) => (
+const CircleIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: string; size?: number; fill?: string }) => (
   <svg
     width={size}
     height={size}
@@ -42,7 +42,7 @@ const CircleIcon = ({ className, size = 24, fill = "#9333EA" }) => (
   </svg>
 )
 
-const DotsPattern = ({ className }) => (
+const DotsPattern = ({ className }: { className?: string}) => (
   <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <circle cx="4" cy="4" r="4" fill="#9333EA" fillOpacity="0.3" />
     <circle cx="4" cy="24" r="4" fill="#9333EA" fillOpacity="0.3" />

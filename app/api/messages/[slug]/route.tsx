@@ -2,9 +2,9 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const {id} =  await params
 
     const client = await clientPromise
     const db = client.db("u3devlab")
@@ -22,9 +22,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const {id} = await params
     const updates = await request.json()
 
     const client = await clientPromise
@@ -43,9 +43,9 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const {id} = await params
 
     const client = await clientPromise
     const db = client.db("u3devlab")

@@ -56,9 +56,9 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
   // Generate slug from title
   useEffect(() => {
     if (!isEditing && product.title && !product.slug) {
-      setProduct((prevProduct) => ({
+      setProduct((prevProduct:any) => ({
         ...prevProduct,
-        slug: product.title
+        slug: prevProduct.title
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, ""),

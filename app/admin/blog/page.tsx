@@ -29,7 +29,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import ViewCounter from "@/components/blog/view-counter"
 import axios from "axios"
 import { formatDistanceToNow } from "date-fns"
-
+import RichTextEditor from "@/components/admin/rich-text-editor"
 // Category options
 const categoryOptions = [
   { id: "design", name: "Design" },

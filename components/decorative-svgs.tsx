@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 
 // Star SVG with animation
-export const StarIcon = ({ className, size = 24, fill = "#9333EA", delay = 0 }) => (
+export const StarIcon = ({ className, size = 24, fill = "#9333EA", delay = 0 }: { className?: string; size?: number; fill?: string ,delay?: number;}) => (
   <motion.svg
     width={size}
     height={size}
@@ -26,7 +26,7 @@ export const StarIcon = ({ className, size = 24, fill = "#9333EA", delay = 0 }) 
 )
 
 // Circle SVG with animation
-export const CircleIcon = ({ className, size = 24, fill = "#9333EA", delay = 0 }) => (
+export const CircleIcon = ({ className, size = 24, fill = "#9333EA", delay =0,opacity=0 }:{ className?: string; size?: number; fill?: string ,delay?: number;opacity?:number}) => (
   <motion.svg
     width={size}
     height={size}
@@ -49,7 +49,7 @@ export const CircleIcon = ({ className, size = 24, fill = "#9333EA", delay = 0 }
 )
 
 // Dots Pattern SVG
-export const DotsPattern = ({ className, color = "#9333EA", opacity = 0.3, delay = 0 }) => (
+export const DotsPattern = ({ className, color = "#9333EA", opacity = 0.3, delay = 0 }:{ className?: string,color?:string, size?: number; fill?: string ,delay?: number,opacity:number}) => (
   <motion.svg
     width="80"
     height="80"
@@ -86,7 +86,7 @@ export const DotsPattern = ({ className, color = "#9333EA", opacity = 0.3, delay
 )
 
 // Wave SVG
-export const WavePattern = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }) => (
+export const WavePattern = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }: { className?: string; color?: string; opacity?: number,delay?:number }) => (
   <motion.svg
     width="100%"
     height="120"
@@ -107,7 +107,7 @@ export const WavePattern = ({ className, color = "#9333EA", opacity = 0.1, delay
 )
 
 // Hexagon Grid
-export const HexagonGrid = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }) => (
+export const HexagonGrid = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }:{ className?: string; color?: string; fill?: string ,delay?: number,opacity:number}) => (
   <motion.svg
     width="200"
     height="200"
@@ -127,7 +127,7 @@ export const HexagonGrid = ({ className, color = "#9333EA", opacity = 0.1, delay
 )
 
 // Blob SVG
-export const BlobShape = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }) => (
+export const BlobShape = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }:{ className?: string, size?: number; fill?: string ,delay?: number,opacity:number,color?:string}) => (
   <motion.svg
     width="300"
     height="300"
@@ -154,7 +154,7 @@ export const BlobShape = ({ className, color = "#9333EA", opacity = 0.1, delay =
 )
 
 // Triangle Pattern
-export const TrianglePattern = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }) => (
+export const TrianglePattern = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }:{ className?: string;color?:string, size?: number; fill?: string ,delay?: number,opacity?:number}) => (
   <motion.svg
     width="200"
     height="200"
@@ -179,7 +179,7 @@ export const TrianglePattern = ({ className, color = "#9333EA", opacity = 0.1, d
 )
 
 // Curved Lines
-export const CurvedLines = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }) => (
+export const CurvedLines = ({ className, color = "#9333EA", opacity = 0.1, delay = 0 }:{ className?: string;color?:string, size?: number; fill?: string ,delay?: number,opacity?:number}) => (
   <motion.svg
     width="400"
     height="200"

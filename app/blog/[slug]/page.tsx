@@ -16,7 +16,7 @@ import ShareButtons, { FloatingShareButton } from "@/components/blog/share-butto
 import ViewCounter from "@/components/blog/view-counter"
 
 // Decorative SVG components
-const StarIcon = ({ className, size = 24, fill = "#9333EA" }) => (
+const StarIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: string; size?: number; fill?: string }) => (
   <svg
     width={size}
     height={size}
@@ -29,7 +29,7 @@ const StarIcon = ({ className, size = 24, fill = "#9333EA" }) => (
   </svg>
 )
 
-const CircleIcon = ({ className, size = 24, fill = "#9333EA" }) => (
+const CircleIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: string; size?: number; fill?: string }) => (
   <svg
     width={size}
     height={size}
@@ -332,7 +332,7 @@ export default function BlogDetailPage() {
               >
                 <div
                   className="prose prose-lg max-w-none prose-headings:text-purple-900 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:underline"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
+                  dangerouslySetInnerHTML={{ __html: post.content as string }}
                 />
 
                 {/* Tags */}

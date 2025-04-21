@@ -2,9 +2,9 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/lib/mongodb"
 import { blogPostSchema } from "@/lib/schemas"
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const slug = params.slug
+    const {slug} = await params
 
     const client = await clientPromise
     const db = client.db("u3devlab")
@@ -22,9 +22,9 @@ export async function GET(request: Request, { params }: { params: { slug: string
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { slug: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const slug = params.slug
+    const {slug} = await params
     const body = await request.json()
 
     // Update timestamp
@@ -69,9 +69,9 @@ export async function PUT(request: Request, { params }: { params: { slug: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { slug: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const slug = params.slug
+    const {slug} = await params
 
     const client = await clientPromise
     const db = client.db("u3devlab")

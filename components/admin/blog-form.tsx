@@ -17,8 +17,10 @@ import { Badge } from "@/components/ui/badge"
 import { X, Save, Trash2, ImageIcon, Eye } from "lucide-react"
 import dynamic from "next/dynamic"
 import type { BlogPost } from "@/lib/schemas"
-import { uploadImage } from "@/lib/cloudinary"
+import { uploadImage } from "@/lib/upload"
+
 import ViewCounter from "@/components/blog/view-counter"
+import RichTextEditor from "@/components/admin/rich-text-editor"
 
 // Dynamically import the rich text editor to avoid server-side rendering issues
 const DynamicEditor = dynamic(() => import("@/components/admin/rich-text-editor"), {
@@ -518,6 +520,8 @@ export default function BlogForm({ initialData, isEditing = false }: BlogFormPro
           </CardFooter>
         </Card>
       </div>
+
+      <RichTextEditor value="" onChange={handleEditorChange}/>
     </form>
   )
 }

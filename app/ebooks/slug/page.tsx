@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -15,7 +15,8 @@ import BookReview from "@/components/ebooks/book-review"
 import type { Product, Review } from "@/lib/schemas"
 import { BookOpen, DollarSign, Star, Calendar, FileText, Download, ShoppingCart, Eye, Globe, Clock } from "lucide-react"
 
-export default function EbookDetailPage({ params }: { params: { slug: string } }) {
+export default function EbookDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const {slug} = use(params)
   const router = useRouter()
   const [ebook, setEbook] = useState<Product | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
@@ -24,14 +25,13 @@ export default function EbookDetailPage({ params }: { params: { slug: string } }
   const [error, setError] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
-
   useEffect(() => {
     const fetchEbookAndReviews = async () => {
       try {
         setIsLoading(true)
 
         // Fetch ebook
-        const response = await fetch(`/api/products/${params.slug}`)
+        const response = await fetch(`/api/products/${slug}`)
         if (!response.ok) {
           throw new Error("Failed to fetch ebook")
         }
@@ -53,7 +53,7 @@ export default function EbookDetailPage({ params }: { params: { slug: string } }
         )
         if (relatedResponse.ok) {
           const relatedData = await relatedResponse.json()
-          setRelatedEbooks(relatedData.filter((p: Product) => p.slug !== params.slug).slice(0, 3))
+          setRelatedEbooks(relatedData.filter((p: Product) => p.slug !== slug).slice(0, 3))
         }
       } catch (error) {
         console.error("Error fetching ebook:", error)
@@ -64,7 +64,7 @@ export default function EbookDetailPage({ params }: { params: { slug: string } }
     }
 
     fetchEbookAndReviews()
-  }, [params.slug])
+  }, [slug])
 
   const handleReviewAdded = (newReview: Review) => {
     setReviews([newReview, ...reviews])

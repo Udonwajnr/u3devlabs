@@ -8,7 +8,7 @@ import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
 // Decorative SVG components
-const StarIcon = ({ className, size = 24, fill = "#9333EA" }) => (
+const StarIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: string; size?: number; fill?: string }) => (
   <svg
     width={size}
     height={size}
@@ -21,7 +21,7 @@ const StarIcon = ({ className, size = 24, fill = "#9333EA" }) => (
   </svg>
 )
 
-const CircleIcon = ({ className, size = 24, fill = "#9333EA" }) => (
+const CircleIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: string; size?: number; fill?: string }) => (
   <svg
     width={size}
     height={size}

@@ -35,16 +35,16 @@ export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState("")
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e:any) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = (name:any, value:any) => {
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
     e.preventDefault()
     setError("")
 
@@ -110,7 +110,7 @@ export default function ContactPage() {
           <StarIcon size={24} />
         </div>
         <div className="absolute bottom-10 left-10">
-          <CircleIcon size={16} fill="#9333EA" opacity={0.3} />
+          <CircleIcon size={16} fill="#9333EA" />
         </div>
         <div className="absolute top-1/3 left-0 hidden md:block">
           <DotsPattern opacity={0.2} />
