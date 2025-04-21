@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
+import clientPromise from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params
-    const { db } = await connectToDatabase()
+    const client = await clientPromise
+    const db = client.db("u3devlab")
 
     const result = await db.collection("reviews").deleteOne({ _id: new ObjectId(id) })
 
@@ -28,7 +29,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     // Only admin can verify reviews
     const { isVerified } = body
 
-    const { db } = await connectToDatabase()
+    const client = await clientPromise
+    const db = client.db("u3devlab")
 
     const result = await db
       .collection("reviews")

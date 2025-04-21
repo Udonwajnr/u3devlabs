@@ -15,13 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { toast } from "@/hooks/use-toast"
 import { uploadImage } from "@/lib/upload"
 import type { Product } from "@/lib/schemas"
-import {  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger } from "@/components/ui/dialog"
+import axios from "axios"
 
 interface ProductFormProps {
   initialData?: Product
@@ -31,21 +25,29 @@ interface ProductFormProps {
 export default function ProductForm({ initialData, isEditing = false }: ProductFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [product, setProduct] = useState<Partial<Product>>({
-    title: "",
-    slug: "",
-    description: "",
-    price: 0,
-    salePrice: undefined,
-    category: "HTML Templates", // Default category
-    tags: [],
-    features: [],
-    images: [],
-    mainImage: "",
-    isPublished: false,
-    isFeatured: false,
-    stock: 10,
-    demoUrl: "",
+  // Replace with this to properly initialize with initialData when available
+  const [product, setProduct] = useState<Partial<Product>>(() => {
+    if (isEditing && initialData) {
+      console.log("Initializing form with data:", initialData)
+      return { ...initialData }
+    }
+
+    return {
+      title: "",
+      slug: "",
+      description: "",
+      price: 0,
+      salePrice: undefined,
+      category: "HTML Templates", // Default category
+      tags: [],
+      features: [],
+      images: [],
+      mainImage: "",
+      isPublished: false,
+      isFeatured: false,
+      stock: 10,
+      demoUrl: "",
+    }
   })
   const [newTag, setNewTag] = useState("")
   const [newFeature, setNewFeature] = useState("")
@@ -193,22 +195,19 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
       setIsSubmitting(true)
 
       const url = isEditing ? `/api/products/${initialData?.slug}` : "/api/products"
+      const method = isEditing ? "put" : "post"
 
-      const method = isEditing ? "PUT" : "POST"
-
-      const response = await fetch(url, {
+      // Using axios instead of fetch
+      const response = await axios({
         method,
+        url,
+        data: product, // Axios uses 'data' instead of 'body'
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(product),
       })
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to save product")
-      }
-
+      // Axios automatically parses JSON and puts the response in .data
       toast({
         title: "Success",
         description: isEditing ? "Product updated successfully" : "Product created successfully",
@@ -217,9 +216,13 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
       router.push("/admin/shop")
     } catch (error: any) {
       console.error("Error saving product:", error)
+
+      // Axios error handling is different
+      const errorMessage = error.response?.data?.error || error.message || "Failed to save product. Please try again."
+
       toast({
         title: "Error",
-        description: error.message || "Failed to save product. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get("limit") ? Number.parseInt(searchParams.get("limit") as string) : undefined
 
     const client = await clientPromise
-    const db = client.db()
+    const db = client.db("u3devlab")
 
     const query: any = {}
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     })
 
     const client = await clientPromise
-    const db = client.db()
+    const db = client.db("u3devlab")
 
     // Check if slug already exists
     const existingProduct = await db.collection("products").findOne({ slug: product.slug })

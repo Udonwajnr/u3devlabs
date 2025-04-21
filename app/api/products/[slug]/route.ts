@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
+import clientPromise from "@/lib/mongodb"
 import { productSchema } from "@/lib/schemas"
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const { slug } = params
-    const { db } = await connectToDatabase()
+    const client = await clientPromise
+    const db = client.db("u3devlab")
 
     const product = await db.collection("products").findOne({ slug })
 
@@ -31,7 +32,8 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
       updatedAt: new Date().toISOString(),
     })
 
-    const { db } = await connectToDatabase()
+    const client = await clientPromise
+    const db = client.db("u3devlab")
 
     // Check if product exists
     const existingProduct = await db.collection("products").findOne({ slug })
@@ -69,7 +71,8 @@ export async function PUT(request: NextRequest, { params }: { params: { slug: st
 export async function DELETE(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const { slug } = params
-    const { db } = await connectToDatabase()
+    const client = await clientPromise
+    const db = client.db("u3devlab")
 
     const result = await db.collection("products").deleteOne({ slug })
 
