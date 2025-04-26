@@ -27,69 +27,6 @@ import {
 } from "@/components/ui/dialog"
 import axios from "axios"
 // Sample portfolio data
-const initialPortfolioData = [
-  {
-    id: 1,
-    title: "Astha | Real Estate Platform",
-    categories: ["landing-page", "saas"],
-    image: "/placeholder.svg?height=400&width=600",
-    date: "05/10/2024",
-    tags: ["UI/UX", "Case Study", "Product Design"],
-    views: 1245,
-    status: "published",
-  },
-  {
-    id: 2,
-    title: "Dripkicks | Sneaker Marketplace",
-    categories: ["ecommerce"],
-    image: "/placeholder.svg?height=400&width=600",
-    date: "12/05/2024",
-    tags: ["UI/UX", "Case Study", "Product Design"],
-    views: 876,
-    status: "published",
-  },
-  {
-    id: 3,
-    title: "imelody | Music Brand",
-    categories: ["branding"],
-    image: "/placeholder.svg?height=400&width=600",
-    date: "18/04/2024",
-    tags: ["Brand Design", "Case Study", "Logo"],
-    views: 543,
-    status: "published",
-  },
-  {
-    id: 4,
-    title: "Solmart | A Supershop Brand",
-    categories: ["ecommerce", "branding"],
-    image: "/placeholder.svg?height=400&width=600",
-    date: "20/03/2024",
-    tags: ["Brand Design", "Stationary", "Logo"],
-    views: 432,
-    status: "published",
-  },
-  {
-    id: 5,
-    title: "TechFlow | SaaS Dashboard",
-    categories: ["saas"],
-    image: "/placeholder.svg?height=400&width=600",
-    date: "15/02/2024",
-    tags: ["UI/UX", "Web App", "Dashboard"],
-    views: 654,
-    status: "draft",
-  },
-  {
-    id: 6,
-    title: "FitTrack | Fitness Mobile App",
-    categories: ["mobile-app"],
-    image: "/placeholder.svg?height=400&width=600",
-    date: "10/01/2024",
-    tags: ["Mobile Design", "UI/UX", "App Development"],
-    views: 321,
-    status: "published",
-  },
-]
-
 // Category options
 const categoryOptions = [
   { id: "landing-page", name: "Landing Pages" },
