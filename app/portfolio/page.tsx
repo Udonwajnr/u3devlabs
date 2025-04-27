@@ -56,7 +56,7 @@ useEffect(() => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <motion.div
             className="text-center max-w-3xl mx-auto"
@@ -94,7 +94,7 @@ useEffect(() => {
           </div>
 
           {/* Projects Grid */}
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <AnimatePresence>
               {filteredProjects.map((project: any, index) => (
                 <motion.div

@@ -184,7 +184,7 @@ export default function PortfolioManagement() {
                     <TableCell className="font-medium">{index+1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded bg-gray-200 flex-shrink-0"></div>
+                        {/* <div className="w-10 h-10 rounded bg-gray-200 flex-shrink-0"></div> */}
                         <div className="font-medium">{project.title}</div>
                       </div>
                     </TableCell>
@@ -224,10 +224,10 @@ export default function PortfolioManagement() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => router.push(`/admin/portfolio/${project.id}`)}>
+                          {/* <DropdownMenuItem onClick={() => router.push(`/admin/portfolio/${project.slug}`)}>
                             <Eye className="h-4 w-4 mr-2" />
                             View
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                           <DropdownMenuItem onClick={() => router.push(`/admin/portfolio/${project.slug}/edit`)}>
                             <Pencil className="h-4 w-4 mr-2" />
                             Edit
