@@ -189,7 +189,7 @@ export default function ServicesPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-purple-50 to-white py-16 md:py-24">
+      <section className="relative bg-gradient-to-r from-blue-50 via-purple-50 to-pink-100 py-16 md:py-24">
         <div className="container mx-auto px-4">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -211,7 +211,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Tabs */}
-      <section className="py-16 md:py-24">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="Web Development" value={activeCategory} onValueChange={setActiveCategory}>
             <div className="flex justify-center mb-12">
@@ -359,7 +359,7 @@ export default function ServicesPage() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   variant="outline"
-                  className="border-white text-white hover:bg-purple-700 transition-all duration-300"
+                  className="bg-white text-purple-600 hover:bg-gray-100 transition-all duration-300"
                 >
                   View Our Portfolio
                 </Button>

@@ -101,9 +101,9 @@ export default function AboutPage() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <Image
-                src="/img8.jpg" // your uploaded image
+                src="/img9.jpg" // your uploaded image
                 width={1200}
-                height={600}
+                height={100}
                 alt="Team collaboration"
                 className="w-full h-auto object-cover"
                 priority
@@ -334,7 +334,7 @@ export default function AboutPage() {
             >
               <div className="rounded-lg overflow-hidden h-full">
                 <Image
-                  src="/placeholder.svg?height=400&width=300"
+                  src="/img10.jpg"
                   width={300}
                   height={400}
                   alt="Team collaboration"
@@ -343,7 +343,7 @@ export default function AboutPage() {
               </div>
               <div className="rounded-lg overflow-hidden h-full">
                 <Image
-                  src="/placeholder.svg?height=400&width=300"
+                  src="/img11.jpg"
                   width={300}
                   height={400}
                   alt="Creative process"
@@ -356,7 +356,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 md:py-24">
+      {/* <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <motion.h2
             className="text-3xl font-bold mb-2"
@@ -429,7 +429,7 @@ export default function AboutPage() {
                   <StarIcon size={16} />
                 </div>
                 <Image
-                  src="/placeholder.svg?height=200&width=200"
+                  src="/dev2.jpg"
                   width={200}
                   height={200}
                   alt="Shahed Shahriar"
@@ -454,7 +454,7 @@ export default function AboutPage() {
                   <StarIcon size={16} />
                 </div>
                 <Image
-                  src="/placeholder.svg?height=200&width=200"
+                  src="/dev1.jpg"
                   width={200}
                   height={200}
                   alt="Afia Nishat Kanta"
@@ -466,10 +466,10 @@ export default function AboutPage() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Journey Section - Masonry Layout */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      {/* <section className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4">
           <motion.h2
             className="text-3xl font-bold text-center mb-16"
@@ -606,7 +606,7 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="py-16 md:py-24 text-center relative">
