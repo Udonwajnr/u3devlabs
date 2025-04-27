@@ -558,7 +558,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Why U3DEVLAB
+            Why Choose U3DEVLAB
           </motion.h2>
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
@@ -571,13 +571,14 @@ export default function Home() {
                 <CheckCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2">USER-CENTERED DESIGN</h3>
+                <h3 className="font-bold text-lg mb-2">User-Centric Design</h3>
                 <p className="text-gray-600">
-                  We put users at the heart of everything we create, ensuring
-                  intuitive and engaging experiences.
+                  We design with purpose—crafting intuitive, engaging, and
+                  seamless user experiences that keep your audience coming back.
                 </p>
               </div>
             </motion.div>
+
             <motion.div
               className="flex gap-4"
               initial={{ opacity: 0, y: 20 }}
@@ -588,13 +589,15 @@ export default function Home() {
                 <CheckCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2">EXPERIENCED TEAM</h3>
+                <h3 className="font-bold text-lg mb-2">Expert Team</h3>
                 <p className="text-gray-600">
-                  Our specialists bring years of industry experience and
-                  technical expertise to every project.
+                  Our experienced developers, designers, and strategists bring
+                  deep industry knowledge and technical expertise to every
+                  project.
                 </p>
               </div>
             </motion.div>
+
             <motion.div
               className="flex gap-4"
               initial={{ opacity: 0, y: 20 }}
@@ -605,10 +608,10 @@ export default function Home() {
                 <CheckCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-2">PROVEN RESULTS</h3>
+                <h3 className="font-bold text-lg mb-2">Proven Track Record</h3>
                 <p className="text-gray-600">
-                  We've helped businesses of all sizes achieve measurable growth
-                  through digital transformation.
+                  We have consistently delivered measurable growth and digital
+                  success for businesses of all sizes across diverse industries.
                 </p>
               </div>
             </motion.div>
