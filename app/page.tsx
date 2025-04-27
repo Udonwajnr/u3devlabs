@@ -143,7 +143,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 md:py-32 relative bg-gradient-to-b from-purple-50 via-purple-50 to-white">
+      <section className="pt-32 pb-16 md:py-32 relative bg-gradient-to-r from-blue-50 via-purple-50 to-pink-100">
         {/* Decorative elements */}
         <div className="absolute top-20 left-10 md:left-20 animate-pulse">
           <StarIcon size={32} />
@@ -457,96 +457,82 @@ export default function Home() {
           >
             Our Recent Work
           </motion.h2>
+
           <div className="grid md:grid-cols-3 gap-6">
+            {/* Card 1 - Branded Kicks */}
             <motion.div
-              className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="relative">
-                <Image
-                  src="/placeholder.svg?height=300&width=400"
-                  width={400}
-                  height={300}
-                  alt="Project 1"
-                  className="w-full h-48 object-cover"
-                />
-                <motion.button
-                  className="absolute bottom-4 left-4 bg-white rounded-full p-2 shadow"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className="h-4 w-4 text-purple-600" />
-                </motion.button>
-              </div>
-              <div className="p-6">
-                <h3 className="font-bold text-lg mb-2">E-commerce Platform</h3>
-                <p className="text-gray-600 text-sm">
-                  Complete online store with payment processing
+              <Image
+                src="/img4.png"
+                width={400}
+                height={250}
+                alt="Branded Kicks eCommerce Website"
+                className="w-full h-72 object-cover opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+              <div className="absolute bottom-6 left-6 right-6 text-white">
+                <h3 className="font-bold text-xl mb-2">Branded Kicks</h3>
+                <p className="text-sm opacity-80">
+                  An eCommerce platform selling premium shoe brands for every
+                  style and season.
                 </p>
               </div>
             </motion.div>
+
+            {/* Card 2 - TixMart */}
             <motion.div
-              className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="relative">
-                <Image
-                  src="/placeholder.svg?height=300&width=400"
-                  width={400}
-                  height={300}
-                  alt="Project 2"
-                  className="w-full h-48 object-cover"
-                />
-                <motion.button
-                  className="absolute bottom-4 left-4 bg-white rounded-full p-2 shadow"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className="h-4 w-4 text-purple-600" />
-                </motion.button>
-              </div>
-              <div className="p-6">
-                <h3 className="font-bold text-lg mb-2">Mobile App Design</h3>
-                <p className="text-gray-600 text-sm">
-                  User-centered mobile application interface
+              <Image
+                src="/img6.png"
+                width={400}
+                height={250}
+                alt="TixMart Ticket Marketplace"
+                className="w-full h-72 object-cover opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+              <div className="absolute bottom-6 left-6 right-6 text-white">
+                <h3 className="font-bold text-xl mb-2">TixMart</h3>
+                <p className="text-sm opacity-80">
+                  A smart ticket marketplace where users can easily buy and sell
+                  event tickets.
                 </p>
               </div>
             </motion.div>
+
+            {/* Card 3 - DeutschDiva */}
             <motion.div
-              className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 relative"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <div className="relative">
-                <Image
-                  src="/placeholder.svg?height=300&width=400"
-                  width={400}
-                  height={300}
-                  alt="Project 3"
-                  className="w-full h-48 object-cover"
-                />
-                <motion.button
-                  className="absolute bottom-4 left-4 bg-white rounded-full p-2 shadow"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className="h-4 w-4 text-purple-600" />
-                </motion.button>
-              </div>
-              <div className="p-6">
-                <h3 className="font-bold text-lg mb-2">SaaS Dashboard</h3>
-                <p className="text-gray-600 text-sm">
-                  Intuitive admin interface for SaaS platform
+              <Image
+                src="/img5.png"
+                width={400}
+                height={250}
+                alt="DutchDiva German Learning Platform"
+                className="w-full h-72 object-cover opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+              <div className="absolute bottom-6 left-6 right-6 text-white">
+                <h3 className="font-bold text-xl mb-2">DeutschDiva</h3>
+                <p className="text-sm opacity-80">
+                  An online platform empowering women to confidently learn and
+                  master the German language.
                 </p>
               </div>
             </motion.div>
           </div>
-          <div className="text-center mt-8">
+
+          <div className="text-center mt-10">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button className="bg-purple-600 hover:bg-purple-700 transition-all duration-300">
                 View All Projects
