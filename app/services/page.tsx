@@ -247,7 +247,7 @@ export default function ServicesPage() {
             value={activeCategory}
             onValueChange={setActiveCategory}
           >
-            <div className="flex justify-center mb-12">
+            <div className="flex justify-center mb-20">
               <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2">
                 {services.map((category) => (
                   <TabsTrigger
@@ -285,12 +285,12 @@ export default function ServicesPage() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Button
+                        {/* <Button
                           variant="outline"
                           className="border-purple-600 text-purple-600 hover:bg-purple-50"
                         >
                           Learn More
-                        </Button>
+                        </Button> */}
                       </motion.div>
                     </motion.div>
                   ))}
