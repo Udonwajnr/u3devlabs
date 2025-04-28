@@ -51,7 +51,7 @@ export default function NewBlogPost() {
     tags: [] as string[],
     isPublished: false,
     author: {
-      name: "Shahed Shahriar",
+      name: "Udonwa, Umoh",
       avatar: "/avatars/shahed.jpg",
     },
   })
