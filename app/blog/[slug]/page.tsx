@@ -43,6 +43,29 @@ const CircleIcon = ({ className, size = 24, fill = "#9333EA" }: { className?: st
   </svg>
 )
 
+export interface BlogPost {
+  _id:string,
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImage: string;
+  author: {
+    name: string;
+    avatar?: string;
+    image:string // optional because in schema it's optional
+  };
+  authorRole:'',
+  category: string;
+  tags: string[];
+  isPublished: boolean;
+  publishedAt?: string; // optional
+  createdAt: string;
+  updatedAt: string;
+  readTime:string;
+  views: number;
+}
+
 // Blog categories
 const categories = [
   { id: "design", name: "Design" },
@@ -57,7 +80,8 @@ export default function BlogDetailPage() {
   const params = useParams()
   const slug = params.slug as string
 
-  const [blogPosts,setBlogPosts] = useState([])
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -162,7 +186,7 @@ export default function BlogDetailPage() {
                 <div className="h-6 border-l border-gray-300 hidden sm:block"></div>
                 <div className="flex items-center gap-1 text-gray-500">
                   <Calendar size={16} />
-                  <span className="text-sm">{post.date}</span>
+                  <span className="text-sm">{post.createdAt}</span>
                 </div>
                 <div className="flex items-center gap-1 text-gray-500">
                   <Clock size={16} />
@@ -318,7 +342,7 @@ export default function BlogDetailPage() {
           </motion.h2>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {relatedPosts.map((relatedPost, index) => (
+            {relatedPosts.map((relatedPost:any, index) => (
               <motion.div
                 key={relatedPost.id}
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
