@@ -64,7 +64,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 py-16 md:py-20 relative">
+      <section className="pt-32  md:pt-32 relative">
         <div className="absolute top-20 right-10 animate-pulse">
           <StarIcon size={24} />
         </div>

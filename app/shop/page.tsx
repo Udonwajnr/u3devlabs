@@ -53,7 +53,7 @@ export default function ShopPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-purple-50 to-white py-16 md:py-24">
+      <section className="bg-gradient-to-b from-purple-50 to-white pt-32 md:py-25">
         <div className="container mx-auto px-4">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -70,7 +70,7 @@ export default function ShopPage() {
       </section>
 
       {/* Shop Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 ">
         <div className="container mx-auto px-4">
           {/* Category Tabs */}
           <Tabs defaultValue="All" value={selectedCategory} onValueChange={setSelectedCategory} className="mb-12">

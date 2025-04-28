@@ -213,7 +213,7 @@ export default function ServicesPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-50 via-purple-50 to-pink-100 py-16 md:py-24">
+      <section className="relative bg-gradient-to-r from-blue-50 via-purple-50 to-pink-100 pt-32 md:py-32">
         <div className="container mx-auto px-4">
           <motion.div
             className="max-w-3xl mx-auto text-center"

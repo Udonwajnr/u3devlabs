@@ -23,40 +23,45 @@ export default function PortfolioPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [projects, setprojects] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch data on mount
-useEffect(() => {
-  getPortfolioData();
-}, []);
+  useEffect(() => {
+    getPortfolioData();
+  }, []);
 
-const getPortfolioData = async () => {
-  try {
-    const res = await axios.get("/api/portfolio");
-    setprojects(res.data);
-  } catch (error) {
-    console.error("Error fetching portfolio data", error);
-  }
-};
+  const getPortfolioData = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get("/api/portfolio");
+      setprojects(res.data);
+    } catch (error) {
+      console.error("Error fetching portfolio data", error);
+      setError("Failed to load products. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-// Filter logic
-useEffect(() => {
-  if (selectedCategory === "all") {
-    setFilteredProjects(projects);
-  } else {
-    setFilteredProjects(
-      projects.filter((project: any) =>
-        project.categories.includes(selectedCategory)
-      )
-    );
-  }
-}, [selectedCategory, projects]); // 🔁 Watch both
+  // Filter logic
+  useEffect(() => {
+    if (selectedCategory === "all") {
+      setFilteredProjects(projects);
+    } else {
+      setFilteredProjects(
+        projects.filter((project: any) =>
+          project.categories.includes(selectedCategory)
+        )
+      );
+    }
+  }, [selectedCategory, projects]); // 🔁 Watch both
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
+      <section className="pt-32 md:py-32">
         <div className="container mx-auto px-4">
           <motion.div
             className="text-center max-w-3xl mx-auto"
@@ -96,55 +101,85 @@ useEffect(() => {
           {/* Projects Grid */}
           <div className="grid md:grid-cols-3 gap-8">
             <AnimatePresence>
-              {filteredProjects.map((project: any, index) => (
+              {isLoading ? (
+                // Loading state
                 <motion.div
-                  key={index}
-                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  layout
+                  key="loading"
+                  className="flex justify-center items-center py-20 col-span-full"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  <div className="relative">
-                    <Image
-                      src={project.coverImage || "/placeholder.svg"}
-                      width={600}
-                      height={400}
-                      alt={project.title}
-                      className="w-full h-[300px]"
-                    />
-                    <motion.div
-                      className="absolute bottom-4 right-4"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button className="bg-purple-600 hover:bg-purple-700">
-                        Explore
-                      </Button>
-                    </motion.div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {project.tags.map((tag: any, index: number) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="bg-purple-100 text-purple-800 hover:bg-purple-200"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="mb-2">
-                      <h3 className="text-xl font-bold">{project.title}</h3>
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Date: {dayjs(project.completedAt).format("MMMM D, YYYY")}
-                    </div>
-                  </div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                 </motion.div>
-              ))}
+              ) : error ? (
+                // Error state
+                <motion.div
+                  key="error"
+                  className="flex flex-col justify-center items-center py-20 col-span-full text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <p className="text-red-500 mb-4">{error}</p>
+                  <Button onClick={getPortfolioData}>Try Again</Button>
+                </motion.div>
+              ) : (
+                // Success state: Projects
+                filteredProjects.map((project: any, index: number) => (
+                  <motion.div
+                    key={index}
+                    className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    layout
+                  >
+                    {/* Project Image */}
+                    <div className="relative">
+                      <Image
+                        src={project.coverImage || "/placeholder.svg"}
+                        width={600}
+                        height={400}
+                        alt={project.title}
+                        className="w-full h-[300px] object-cover"
+                      />
+                      <motion.div
+                        className="absolute bottom-4 right-4"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button className="bg-purple-600 hover:bg-purple-700">
+                          Explore
+                        </Button>
+                      </motion.div>
+                    </div>
+
+                    {/* Project Details */}
+                    <div className="p-6">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {project.tags.map((tag: any, idx: number) => (
+                          <Badge
+                            key={idx}
+                            variant="outline"
+                            className="bg-purple-100 text-purple-800 hover:bg-purple-200"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Date:{" "}
+                        {dayjs(project.completedAt).format("MMMM D, YYYY")}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))
+              )}
             </AnimatePresence>
           </div>
 

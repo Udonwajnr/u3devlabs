@@ -174,7 +174,7 @@ export default function HelpCenterPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 md:py-24 relative bg-gradient-to-b from-purple-50 to-white">
+      <section className="pt-32 pb-16 md:py-32 relative bg-gradient-to-b from-purple-50 to-white">
         {/* Decorative elements */}
         <div className="absolute top-20 right-10">
           <StarIcon size={24} />

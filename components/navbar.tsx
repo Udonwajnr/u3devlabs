@@ -100,16 +100,7 @@ export default function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
-                <div className="flex justify-end mb-8">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-                <nav className="flex flex-col space-y-6">
+                <nav className="flex flex-col space-y-6 mt-14">
                   <Link
                     href="/"
                     className="text-lg font-medium hover:text-purple-600 transition-colors duration-300"
