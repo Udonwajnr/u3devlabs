@@ -247,7 +247,7 @@ export default function ServicesPage() {
             value={activeCategory}
             onValueChange={setActiveCategory}
           >
-            <div className="flex justify-center mb-20">
+            <div className="flex justify-center mb-20 md:mb-12">
               <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2">
                 {services.map((category) => (
                   <TabsTrigger
