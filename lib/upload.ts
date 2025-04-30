@@ -6,7 +6,7 @@ export const uploadImage = async (file: File): Promise<string> => {
       reader.onload = () => resolve(reader.result as string)
       reader.onerror = (error) => reject(error)
     })
-  
+   
     // Upload to Cloudinary
     try {
       const response = await fetch("/api/upload", {

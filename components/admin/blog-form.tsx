@@ -197,6 +197,7 @@ export default function BlogForm({ initialData, isEditing = false }: BlogFormPro
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-6">
+      <RichTextEditor value="hello" onChange={handleEditorChange}/>
         <Card>
           <CardHeader>
             <CardTitle>{isEditing ? "Edit Blog Post" : "Create New Blog Post"}</CardTitle>
@@ -521,7 +522,7 @@ export default function BlogForm({ initialData, isEditing = false }: BlogFormPro
         </Card>
       </div>
 
-      <RichTextEditor value="" onChange={handleEditorChange}/>
+      
     </form>
   )
 }

@@ -582,6 +582,7 @@ export default function NewBlogPost() {
           </motion.div>
         </div>
 
+
         <motion.div
           className="flex justify-end gap-4"
           initial={{ opacity: 0, y: 20 }}
