@@ -9,6 +9,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import axios from "axios";
 import dayjs from "dayjs";
+import Link from "next/link";
 // Project categories
 const categories = [
   { id: "all", name: "All Projects" },
@@ -150,9 +151,14 @@ export default function PortfolioPage() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Button className="bg-purple-600 hover:bg-purple-700">
-                          Explore
-                        </Button>
+                        <a href={project?.website ?? "#"} target="_blank">
+                          <Button
+                            variant="default"
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md transition duration-300"
+                          >
+                            Explore
+                          </Button>
+                        </a>
                       </motion.div>
                     </div>
 

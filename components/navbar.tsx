@@ -68,12 +68,12 @@ export default function Navbar() {
             >
               Portfolio
             </Link>
-            <Link
+            {/* <Link
               href="/shop"
               className="text-sm font-medium hover:text-purple-600 transition-colors duration-300"
             >
               Shop
-            </Link>
+            </Link> */}
             <Link
               href="/blog"
               className="text-sm font-medium hover:text-purple-600 transition-colors duration-300"
@@ -129,13 +129,13 @@ export default function Navbar() {
                   >
                     Portfolio
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/shop"
                     className="text-lg font-medium hover:text-purple-600 transition-colors duration-300"
                     onClick={() => setIsOpen(false)}
                   >
                     Shop
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/blog"
                     className="text-lg font-medium hover:text-purple-600 transition-colors duration-300"

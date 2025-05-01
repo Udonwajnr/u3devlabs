@@ -118,7 +118,7 @@ export default function ShareButtons({
   ]
 
   return (
-    <div className={cn("flex gap-2", direction === "vertical" ? "flex-col" : "flex-row flex-wrap", className)}>
+    <div className={cn("flex gap-2", direction === "vertical" ? "flex-col" : "flex-row flex-wrap", className,"hidden md:flex")}>
       <div className={cn("flex gap-2", direction === "vertical" ? "flex-col" : "flex-row flex-wrap")}>
         {platforms.map((platform) => (
           <TooltipProvider key={platform.name}>

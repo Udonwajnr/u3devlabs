@@ -89,100 +89,52 @@ const DotsPattern = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Blog posts data (same as in the blog detail page)
-const blogPosts = [
-  {
-    id: 1,
-    title: "10 UI/UX Design Trends to Watch in 2024",
-    excerpt:
-      "Discover the latest design trends that are shaping the digital landscape and how you can incorporate them into your projects.",
-    image: "/placeholder.svg?height=600&width=1200",
-    date: "May 15, 2024",
-    author: "Shahed Shahriar",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["design"],
-    slug: "ui-ux-design-trends-2024",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "The Future of Web Development: What to Expect in the Next 5 Years",
-    excerpt:
-      "From WebAssembly to AI-driven development, explore the technologies that will define the future of web development.",
-    image: "/placeholder.svg?height=600&width=1200",
-    date: "May 10, 2024",
-    author: "Asif Rahman",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["development", "technology"],
-    slug: "future-of-web-development",
-    featured: true,
-  },
-  {
-    id: 3,
-    title: "How to Optimize Your Website for Better Performance",
-    excerpt:
-      "Learn practical techniques to improve your website's loading speed and overall performance for better user experience.",
-    image: "/placeholder.svg?height=400&width=600",
-    date: "May 5, 2024",
-    author: "Asif Rahman",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["development", "tutorials"],
-    slug: "optimize-website-performance",
-  },
-  {
-    id: 4,
-    title: "Building Accessible Web Applications: A Comprehensive Guide",
-    excerpt:
-      "Discover how to create web applications that are accessible to all users, including those with disabilities.",
-    image: "/placeholder.svg?height=400&width=600",
-    date: "April 28, 2024",
-    author: "Afia Nishat Kanta",
-    authorImage: "/placeholder.svg?height=100&width=100",
-    categories: ["development", "design"],
-    slug: "building-accessible-web-applications",
-  },
-];
-
-// const featuredPosts = blogPosts.slice(0, 2)
 
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [featuredPosts, setFeaturedPosts] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getBlogData();
   }, []);
-  // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const query = e.target.value
-  //   setSearchQuery(query)
 
-  //   if (query.trim() === "") {
-  //     setFilteredPosts(blogPosts)
-  //   } else {
-  //     const filtered = blogPosts.filter(
-  //       (post) =>
-  //         post.title.toLowerCase().includes(query.toLowerCase()) ||
-  //         post.excerpt.toLowerCase().includes(query.toLowerCase()),
-  //     )
-  //     setFilteredPosts(filtered)
-  //   }
-  // }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+  
+    if (query.trim() === "") {
+      setFilteredPosts(blogPosts);
+    } else {
+      const filtered = blogPosts.filter(
+        (post:any) =>
+          post.title.toLowerCase().includes(query.toLowerCase()) ||
+          post.excerpt.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredPosts(filtered);
+    }
+  };
+  
 
   const getBlogData = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get("/api/blog");
+      setBlogPosts(response.data);
       setFilteredPosts(response.data);
       setFeaturedPosts(response.data);
     } catch (error) {
       console.log(error);
+      setError("Failed to load blog posts");
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
-  console.log(filteredPosts);
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -211,88 +163,16 @@ export default function BlogPage() {
                 type="text"
                 placeholder="Search articles..."
                 className="pl-10 py-6 text-base"
-                // value={searchQuery}
-                // onChange={handleSearch}
+                value={searchQuery}
+                onChange={handleSearch}
               />
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Featured Posts */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            className="text-3xl font-bold text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Featured Articles
-          </motion.h2>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {featuredPosts?.map((post: any, index: number) => (
-              <motion.div
-                key={post._id}
-                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Link href={`/blog/${post.slug}`} className="block relative">
-                  <Image
-                    src={post.coverImage || "/placeholder.svg"}
-                    width={600}
-                    height={400}
-                    alt={post.title}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-3 hover:text-purple-600 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Image
-                          src={post.authorImage || "/placeholder.svg"}
-                          width={30}
-                          height={30}
-                          alt={post.author}
-                          className="rounded-full"
-                        />
-                        <span className="text-sm text-gray-500">
-                          {post.date}
-                        </span>
-                      </div>
-                      <ViewCounter slug={post.slug} trackView={false} />
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Add share buttons at the bottom of each card */}
-                <div className="px-6 pb-6 pt-2 flex justify-between items-center border-t mt-4">
-                  <span className="text-sm text-gray-500">
-                    Share this article
-                  </span>
-                  <ShareButtons
-                    title={post.title}
-                    url={`https://u3devlab.com/blog/${post.slug}`}
-                    excerpt={post.excerpt}
-                    direction="horizontal"
-                    size="sm"
-                    variant="ghost"
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* All Posts */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      <section className="py-16 md:py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <motion.h2
             className="text-3xl font-bold text-center mb-16"
@@ -303,7 +183,7 @@ export default function BlogPage() {
             Latest Articles
           </motion.h2>
 
-          <div className="grid md:grid-cols-4 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 lg:grid-cols-4 gap-8">
             {filteredPosts?.map((post: any, index) => (
               <motion.div
                 key={post._id}
@@ -374,43 +254,6 @@ export default function BlogPage() {
           )} */}
         </div>
       </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="bg-purple-600 text-white p-8 md:p-12 rounded-xl text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Subscribe to our newsletter to receive the latest articles,
-              tutorials, and updates directly in your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="Your email address"
-                className="bg-white text-gray-800 border-none"
-              />
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button className="bg-white text-purple-600 hover:bg-gray-100 transition-all duration-300 whitespace-nowrap">
-                  Subscribe
-                </Button>
-              </motion.div>
-            </div>
-            <p className="text-sm mt-4 text-purple-200">
-              We respect your privacy. Unsubscribe at any time.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );

@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { uploadImage } from "@/lib/upload"
 import { toast } from "@/hooks/use-toast"
 import axios from "axios"
+import dynamic from "next/dynamic"
 import RichTextEditor from "@/components/admin/rich-text-editor"
 
 // Category options
@@ -31,11 +32,13 @@ const categoryOptions = [
 
 // Author options
 const authorOptions = [
-  { id: "shahed", name: "Shahed Shahriar", avatar: "/avatars/shahed.jpg" },
-  { id: "asif", name: "Asif Rahman", avatar: "/avatars/asif.jpg" },
-  { id: "afia", name: "Afia Nishat Kanta", avatar: "/avatars/afia.jpg" },
-  { id: "shihab", name: "Shihab Uddin", avatar: "/avatars/shihab.jpg" },
+  { id: "Umoh", name: "Umoh Udonwa", avatar: "" },
 ]
+
+const DynamicEditor = dynamic(() => import("@/components/admin/rich-text-editor"), {
+  ssr: false,
+  loading: () => <div className="h-64 w-full bg-gray-100 animate-pulse rounded-md" />,
+})
 
 export default function NewBlogPost() {
   const router = useRouter()
@@ -311,6 +314,12 @@ export default function NewBlogPost() {
     }
   }
 
+  const handleEditorChange = (content: string) => {
+    setFormData({ ...formData, content })
+  }
+
+  console.log(formData)
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
       <motion.div
@@ -401,35 +410,7 @@ export default function NewBlogPost() {
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
               <TabsContent value="edit" className="space-y-2">
-                <div className="flex flex-wrap gap-2 mb-2">
-                  <Button type="button" variant="outline" size="icon" onClick={() => insertTextFormat("bold")}>
-                    <Bold className="h-4 w-4" />
-                  </Button>
-                  <Button type="button" variant="outline" size="icon" onClick={() => insertTextFormat("italic")}>
-                    <Italic className="h-4 w-4" />
-                  </Button>
-                  <Button type="button" variant="outline" size="icon" onClick={() => insertTextFormat("link")}>
-                    <Link className="h-4 w-4" />
-                  </Button>
-                  <Button type="button" variant="outline" size="icon" onClick={() => insertTextFormat("ul")}>
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button type="button" variant="outline" size="icon" onClick={() => insertTextFormat("ol")}>
-                    <ListOrdered className="h-4 w-4" />
-                  </Button>
-                  <Button type="button" variant="outline" size="icon" onClick={() => insertTextFormat("image")}>
-                    <ImageIcon className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Textarea
-                  id="content"
-                  name="content"
-                  placeholder="Write your post content here (at least 50 characters)..."
-                  rows={15}
-                  value={formData.content}
-                  onChange={handleInputChange}
-                  className="font-mono text-sm"
-                />
+                  <DynamicEditor value={formData.content || ""} onChange={handleEditorChange} />        
                 <p className="text-xs text-muted-foreground">
                   You can use HTML tags for formatting. Use the toolbar above for common formatting options.
                 </p>
@@ -603,6 +584,8 @@ export default function NewBlogPost() {
             )}
           </Button>
         </motion.div>
+
+
       </form>
     </div>
   )
